@@ -4,6 +4,7 @@
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://git.sr.ht/~protesilaos/denote
+;; Mailing list: https://lists.sr.ht/~protesilaos/denote
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "27.2"))
 
@@ -29,6 +30,7 @@
 ;;; Code:
 
 (require 'denote)
+(require 'xref)
 
 (defconst denote-retrieve--title-front-matter-regexp
   "^\\(?:#\\+\\)?\\(?:title\\)\\s-*[:=]\\s-*[\"']?\\(?1:.*\\b\\)[\"']?"
@@ -95,8 +97,6 @@ Optional GROUP is a regexp construct for
   (delq nil (mapcar (lambda (f)
                       (when (denote--only-note-p f) f))
                     files)))
-
-(declare-function xref--analyze "xref" (xrefs))
 
 (defun denote-retrieve--xrefs (identifier)
   "Return xrefs of IDENTIFIER in variable `denote-directory'.

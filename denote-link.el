@@ -4,6 +4,7 @@
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://git.sr.ht/~protesilaos/denote
+;; Mailing list: https://lists.sr.ht/~protesilaos/denote
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "27.2"))
 
@@ -189,6 +190,23 @@ and/or the documentation string of `display-buffer'."
                alist)
   :group 'denote-link)
 
+(defcustom denote-link-use-org-id nil
+  "When non-nil use the ID link type in Org files.
+
+Newly created links will use the standard `id:' hyperlink type
+instead of the custom `denote:' type.
+
+In practical terms, the ID ensures maximum compatibility with the
+Org ecosystem.
+
+When the value is nil, Denote links rely on the custom `denote:'
+type (which should behave the same as the standard `file:' type).
+
+Other files types beside Org always use the `denote:' links."
+  :type 'boolean
+  :group 'denote-link)
+;;;###autoload (put 'denote-link-use-org-id 'safe-local-variable 'booleanp)
+
 ;;;; Link to note
 
 ;; Arguments are: FILE-ID FILE-TITLE
@@ -196,7 +214,7 @@ and/or the documentation string of `display-buffer'."
   "Format of Org link to note.")
 
 (defconst denote-link--format-org-with-id "[[id:%s][%s]]"
-  "Format of Org link to note for `denote-use-org-id'.")
+  "Format of Org link to note for `denote-link-use-org-id'.")
 
 (defconst denote-link--format-markdown "[%2$s](denote:%1$s)"
   "Format of Markdown link to note.")
@@ -215,7 +233,7 @@ and/or the documentation string of `display-buffer'."
 
 (defun denote-link--file-type-format (file)
   "Return link format based on FILE format."
-  (let ((org-format (if denote-use-org-id
+  (let ((org-format (if denote-link-use-org-id
                         denote-link--format-org-with-id
                       denote-link--format-org)))
     (pcase (file-name-extension file)
@@ -286,9 +304,6 @@ format is always [[denote:IDENTIFIER]]."
                    nil t
                    nil 'denote-link--find-file-history))
 
-;; TODO 2022-06-14: We should document the use of Embark for
-;; `denote-link-find-file'.  Users are gonna love it!
-
 ;; TODO 2022-06-14: Do we need to add any sort of extension to better
 ;; integrate with Embark?  For the minibuffer interaction it is not
 ;; necessary, but maybe it can be done to immediately recognise the
@@ -305,9 +320,6 @@ format is always [[denote:IDENTIFIER]]."
 
 ;;;; Link buttons
 
-;; TODO 2022-06-19: Review link and backlins buttons.  Consolidate what
-;; is needed.
-
 ;; Evaluate: (info "(elisp) Button Properties")
 ;;
 ;; Button can provide a help-echo function as well, but I think we might
@@ -323,13 +335,14 @@ format is always [[denote:IDENTIFIER]]."
   (when (or (thing-at-point-looking-at denote-link--regexp-plain)
             (thing-at-point-looking-at denote-link--regexp-markdown)
             (thing-at-point-looking-at denote-link--regexp-org)
-            ;; REVIEW 2022-06-19: This is crude.  It is meant to handles
-            ;; the case where a link is broken by `fill-paragraph' into
-            ;; two lines, in which case it buttonizes only the
-            ;; "denote:ID" part.  Example:
+            ;; Meant to handle the case where a link is broken by
+            ;; `fill-paragraph' into two lines, in which case it
+            ;; buttonizes only the "denote:ID" part.  Example:
             ;;
             ;; [[denote:20220619T175212][This is a
             ;; test]]
+            ;;
+            ;; Maybe there is a better way?
             (thing-at-point-looking-at "\\[\\(denote:.*\\)]"))
     (match-string-no-properties 0)))
 
@@ -439,6 +452,8 @@ default, it will show up below the current window."
       (user-error "No links to the current note"))))
 
 (defalias 'denote-link-show-backlinks-buffer (symbol-function 'denote-link-backlinks))
+
+;;;; Add links matching regexp
 
 (defvar denote-link--links-to-files nil
   "String of `denote-link-add-links-matching-keyword'.")

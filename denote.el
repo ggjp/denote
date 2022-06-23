@@ -4,6 +4,7 @@
 
 ;; Author: Protesilaos Stavrou <info@protesilaos.com>
 ;; URL: https://git.sr.ht/~protesilaos/denote
+;; Mailing list: https://lists.sr.ht/~protesilaos/denote
 ;; Version: 0.1.0
 ;; Package-Requires: ((emacs "27.2"))
 
@@ -273,7 +274,7 @@ We consider those characters illigal for our purposes.")
          (path (if (or (eq val 'default-directory) (eq val 'local)) default-directory val)))
     (unless (file-directory-p path)
       (make-directory path t))
-    (when (and denote-use-org-id (require 'org-id nil t))
+    (when (require 'org-id nil :noerror)
       (setq org-id-extra-files (directory-files path nil "\.org$")))
     (file-name-as-directory path)))
 
@@ -509,10 +510,12 @@ is specific to this variable: it expect a delimiter such as
   "Final delimiter for plain text front matter.")
 
 (defvar denote-org-front-matter
-  "#+title:      %s
+  ":PROPERTIES:
+:ID:          %4$s
+:END:
+#+title:      %s
 #+date:       %s
 #+filetags:   %s
-#+identifier: %s
 \n"
   "Org front matter value for `format'.
 The order of the arguments is TITLE, DATE, KEYWORDS, ID.  If you
