@@ -1026,6 +1026,8 @@ If none is found, the first element of `denote-file-types' is
 returned."
   (unless (or (symbolp filetype) (stringp filetype))
     (user-error "`%s' is not a symbol or string" filetype))
+  (when (eq filetype t)
+    (user-error "t is not a valid file type"))
   (when (stringp filetype)
     (setq filetype (intern filetype)))
   (if (memq filetype (mapcar 'car denote-file-types))
