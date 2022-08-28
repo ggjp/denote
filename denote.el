@@ -1302,7 +1302,8 @@ set to \\='(template title keywords)."
   "Return only the entries of `denote-file-types' with EXTENSION.
 See the format of `denote-file-types'."
   (seq-filter (lambda (type)
-                (string-equal (plist-get (cdr type) :extension) extension))
+                (and (not (eq (car type) t))
+                     (string-equal (plist-get (cdr type) :extension) extension)))
               denote-file-types))
 
 (defun denote--filetype-heuristics (file)
