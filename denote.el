@@ -708,6 +708,9 @@ Consult the `denote-file-types' for how this is used."
      :title-value-reverse-function denote-trim-whitespace
      :keywords-key-regexp "^tags\\s-*:"
      :keywords-value-function denote-format-keywords-for-text-front-matter
+     :keywords-value-reverse-function denote-extract-keywords-from-front-matter)
+    (t ; fallback values in case they are not specified
+     :title-value-function identity
      :keywords-value-reverse-function denote-extract-keywords-from-front-matter))
   "Alist of `denote-file-type' and their format properties.
 
@@ -750,41 +753,47 @@ PROPERTY-LIST is a plist that consists of 8 elements:
   retrieve the keywords' value from the front matter.  It
   performs the reverse of the `:keywords-value-function'.")
 
+(defun denote--alist-get-file-type (file-type)
+  "Run `alist-get' for FILE-TYPE or `denote-file-types' fallback."
+  (if-let ((type (alist-get file-type denote-file-types)))
+      type
+    (alist-get t denote-file-types)))
+
 (defun denote--file-extension (file-type)
   "Return file type extension based on FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :extension))
+  (plist-get (denote--alist-get-file-type file-type) :extension))
 
 (defun denote--front-matter (file-type)
   "Return front matter based on FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :front-matter))
+  (plist-get (denote--alist-get-file-type file-type) :front-matter))
 
 (defun denote--title-key-regexp (file-type)
   "Return the title key regexp associated to FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :title-key-regexp))
+  (plist-get (denote--alist-get-file-type file-type) :title-key-regexp))
 
 (defun denote--title-value-function (file-type)
   "Function to convert the title string to a front matter title.
 Based on FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :title-value-function))
+  (plist-get (denote--alist-get-file-type file-type) :title-value-function))
 
 (defun denote--title-value-reverse-function (file-type)
   "Function to convert a front matter title to the title string.
 Based on FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :title-value-reverse-function))
+  (plist-get (denote--alist-get-file-type file-type) :title-value-reverse-function))
 
 (defun denote--keywords-key-regexp (file-type)
   "Return the keywords key regexp associated to FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :keywords-key-regexp))
+  (plist-get (denote--alist-get-file-type file-type) :keywords-key-regexp))
 
 (defun denote--keywords-value-function (file-type)
   "Function to convert the keywords string to a front matter keywords.
 Based on FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :keywords-value-function))
+  (plist-get (denote--alist-get-file-type file-type) :keywords-value-function))
 
 (defun denote--keywords-value-reverse-function (file-type)
   "Function to convert a front matter keywords to the keywords list.
 Based on FILE-TYPE."
-  (plist-get (alist-get file-type denote-file-types) :keywords-value-reverse-function))
+  (plist-get (denote--alist-get-file-type file-type) :keywords-value-reverse-function))
 
 (defun denote--extensions ()
   "Return all extensions in `denote-file-type'."
