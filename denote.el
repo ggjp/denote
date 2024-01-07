@@ -124,28 +124,14 @@
 
 ;; About the autoload: (info "(elisp) File Local Variables")
 
-;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (eq val 'local) (eq val 'default-directory))))
+;;;###autoload (put 'denote-directory 'safe-local-variable #'stringp)
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
   "Directory for storing personal notes.
 
-A safe local value of either `default-directory' or `local' can
-be added as a value in a .dir-local.el file.  Do this if you
-intend to use multiple directory silos for your notes while still
-relying on a global value (which is the value of this variable).
-The Denote manual has a sample (search for '.dir-locals.el').
-Those silos do not communicate with each other: they remain
-separate.
-
-The local value influences where commands such as `denote' will
-place the newly created note.  If the command is called from a
-directory or file where the local value exists, then that value
-take precedence, otherwise the global value is used.
-
 If you intend to reference this variable in Lisp, consider using
-the function `denote-directory' instead: it returns the path as a
-directory and also checks if a safe local value should be used."
+the function `denote-directory' instead."
   :group 'denote
-  :safe (lambda (val) (or (eq val 'local) (eq val 'default-directory)))
+  :safe #'stringp
   :package-version '(denote . "2.0.0")
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
