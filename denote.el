@@ -671,14 +671,8 @@ the `denote-excluded-punctuation-regexp'."
     str))
 
 (defun denote--slug-hyphenate (str)
-  "Replace spaces and underscores with hyphens in STR.
-Also replace multiple hyphens with a single one and remove any
-leading and trailing hyphen."
-  (replace-regexp-in-string
-   "^-\\|-$" ""
-   (replace-regexp-in-string
-    "-\\{2,\\}" "-"
-    (replace-regexp-in-string "_\\|\s+" "-" str))))
+  "Replace spaces and underscores with hyphens in STR."
+  (replace-regexp-in-string "_\\|\s+" "-" str))
 
 (defun denote--remove-dot-characters (str)
   "Remove dot characters from STR."
