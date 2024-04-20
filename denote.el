@@ -1651,18 +1651,6 @@ The return value is a list of strings."
       (when (re-search-forward (denote--keywords-key-regexp file-type) nil t 1)
         (buffer-substring-no-properties (line-beginning-position) (line-end-position))))))
 
-(defalias 'denote-retrieve-title-value 'denote-retrieve-front-matter-title-value
-  "Alias for `denote-retrieve-front-matter-title-value'.")
-
-(defalias 'denote-retrieve-title-line 'denote-retrieve-front-matter-title-line
-  "Alias for `denote-retrieve-front-matter-title-line'.")
-
-(defalias 'denote-retrieve-keywords-value 'denote-retrieve-front-matter-keywords-value
-  "Alias for `denote-retrieve-front-matter-keywords-value'.")
-
-(defalias 'denote-retrieve-keywords-line 'denote-retrieve-front-matter-keywords-line
-  "Alias for `denote-retrieve-front-matter-keywords-line'.")
-
 (defun denote-retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE.
 This is a wrapper for `denote-retrieve-front-matter-title-value' and
@@ -2219,9 +2207,6 @@ With optional PROMPT-TEXT use it instead of a generic prompt."
 
 ;;;;; Convenience commands as `denote' variants
 
-(defalias 'denote-create-note 'denote
-  "Alias for `denote' command.")
-
 (defun denote-add-prompts (additional-prompts)
   "Add list of ADDITIONAL-PROMPTS to `denote-prompts'.
 This is best done inside of a `let' to create a wrapper function around
@@ -2240,9 +2225,6 @@ has the `file-type' prompt appended to its existing prompts."
   (let ((denote-prompts (denote-add-prompts '(file-type))))
     (call-interactively #'denote)))
 
-(defalias 'denote-create-note-using-type 'denote-type
-  "Alias for `denote-type' command.")
-
 ;;;###autoload
 (defun denote-date ()
   "Create note while prompting for a date.
@@ -2259,9 +2241,6 @@ has the `date' prompt appended to its existing prompts."
   (let ((denote-prompts (denote-add-prompts '(date))))
     (call-interactively #'denote)))
 
-(defalias 'denote-create-note-using-date 'denote-date
-  "Alias for `denote-date' command.")
-
 ;;;###autoload
 (defun denote-subdirectory ()
   "Create note while prompting for a subdirectory.
@@ -2275,9 +2254,6 @@ has the `subdirectory' prompt appended to its existing prompts."
   (interactive)
   (let ((denote-prompts (denote-add-prompts '(subdirectory))))
     (call-interactively #'denote)))
-
-(defalias 'denote-create-note-in-subdirectory 'denote-subdirectory
-  "Alias for `denote-subdirectory' command.")
 
 ;;;###autoload
 (defun denote-template ()
@@ -2294,9 +2270,6 @@ has the `template' prompt appended to its existing prompts."
   (let ((denote-prompts (denote-add-prompts '(template))))
     (call-interactively #'denote)))
 
-(defalias 'denote-create-note-with-template 'denote-template
-  "Alias for `denote-template' command.")
-
 ;;;###autoload
 (defun denote-signature ()
   "Create note while prompting for a file signature.
@@ -2307,9 +2280,6 @@ has the `signature' prompt appended to its existing prompts."
   (interactive)
   (let ((denote-prompts (denote-add-prompts '(signature))))
     (call-interactively #'denote)))
-
-(defalias 'denote-create-note-using-signature 'denote-signature
-  "Alias for `denote-signature' command.")
 
 ;;;###autoload
 (defun denote-region ()
@@ -2807,9 +2777,6 @@ setting `denote-rename-confirmations' to a nil value)."
               (denote--rename-file file title keywords signature date)))
           (denote-update-dired-buffers))
       (user-error "No marked files; aborting"))))
-
-(defalias 'denote-dired-rename-marked-files 'denote-dired-rename-files
-  "Alias for `denote-dired-rename-files'.")
 
 (defun denote-keywords--combine (combination-type user-input-keywords keywords)
   "COMBINATION-TYPE is either `:add', `:remove' or `:replace'.
@@ -3454,9 +3421,6 @@ treats the active region specially, is up to it."
     (unless (derived-mode-p 'org-mode)
       (make-button beg (point) 'type 'denote-link-button))))
 
-(defalias 'denote-insert-link 'denote-link
-  "Alias for `denote-link' command.")
-
 ;;;###autoload
 (defun denote-link-with-signature ()
   "Insert link to file with signature.
@@ -3523,9 +3487,6 @@ Also see `denote-link-return-backlinks'."
     (with-temp-buffer
       (insert-file-contents current-file)
       (denote-link--expand-identifiers regexp))))
-
-(defalias 'denote-link-return-forelinks 'denote-link-return-links
-  "Alias for `denote-link-return-links'.")
 
 ;;;###autoload
 (defun denote-find-link ()
@@ -3637,9 +3598,6 @@ file's title.  This has the same meaning as in `denote-link'."
                (denote-filetype-heuristics (buffer-file-name))
                (denote--link-get-description target)
                id-only))
-
-(defalias 'denote-link-to-existing-or-new-note 'denote-link-or-create
-  "Alias for `denote-link-or-create' command.")
 
 ;;;;; Link buttons
 
@@ -3864,9 +3822,6 @@ Place the buffer below the current window or wherever the user option
         (denote-link--prepare-backlinks id nil (denote--backlinks-get-buffer-name file id)))
     (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
 
-(defalias 'denote-show-backlinks-buffer 'denote-backlinks
-  "Alias for `denote-backlinks' command.")
-
 ;;;;; Add links matching regexp
 
 (defvar denote-link--prepare-links-format "- %s\n"
@@ -3933,9 +3888,6 @@ inserts links with just the identifier."
           (denote-link--insert-links files file-type id-only)
           (denote-link-buttonize-buffer beg (point)))
       (message "No links matching `%s'" regexp))))
-
-(defalias 'denote-link-insert-links-matching-regexp 'denote-add-links
-  "Alias for `denote-add-links' command.")
 
 ;;;;; Links from Dired marks
 
