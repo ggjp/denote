@@ -327,28 +327,6 @@ technicalities."
           (const :tag "Plain text" text))
   :group 'denote)
 
-(defcustom denote-date-format nil
-  "Date format in the front matter (file header) of new notes.
-
-When nil (the default value), use a file-type-specific
-format (also check `denote-file-type'):
-
-- For Org, an inactive timestamp is used, such as [2022-06-30 Wed
-  15:31].
-
-- For Markdown, the RFC3339 standard is applied:
-  2022-06-30T15:48:00+03:00.
-
-- For plain text, the format is that of ISO 8601: 2022-06-30.
-
-If the value is a string, ignore the above and use it instead.
-The string must include format specifiers for the date.  These
-are described in the doc string of `format-time-string'."
-  :type '(choice
-          (const :tag "Use appropiate format for each file type" nil)
-          (string :tag "Custom format for `format-time-string'"))
-  :group 'denote)
-
 (defcustom denote-date-prompt-use-org-read-date nil
   "Whether to use `org-read-date' in date prompts.
 
@@ -1746,14 +1724,9 @@ Apply `denote-sluggify' to KEYWORDS."
 
 (defun denote--date (date file-type)
   "Expand DATE in an appropriate format for FILE-TYPE."
-  (let ((format denote-date-format))
-    (cond
-     (format
-      (format-time-string format date))
-     ((when-let ((fn (denote--date-format-function file-type)))
-        (funcall fn date)))
-     (t
-      (denote-date-org-timestamp date)))))
+  (if-let ((fn (denote--date-format-function file-type)))
+      (funcall fn date)
+    (denote-date-org-timestamp date)))
 
 (defun denote--prepare-note (title keywords date id directory file-type template signature)
   "Prepare a new note file and return its path.
