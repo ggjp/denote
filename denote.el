@@ -240,8 +240,7 @@ of the following:
   for a sequence of notes (Folgezettel).  Signatures are not
   included in a file's front matter.  They are reserved solely
   for creating a sequence in a file listing, at least for the
-  time being.  To insert a link that includes the signature, use
-  the command `denote-link-with-signature'.
+  time being.
 
 The prompts occur in the given order.
 
@@ -3239,27 +3238,6 @@ treats the active region specially, is up to it."
     (insert (denote-format-link file description file-type id-only))
     (unless (derived-mode-p 'org-mode)
       (make-button beg (point) 'type 'denote-link-button))))
-
-;;;###autoload
-(defun denote-link-with-signature ()
-  "Insert link to file with signature.
-Prompt for file using minibuffer completion, limiting the list of
-candidates to files with a signature in their file name.
-
-By default, the description of the link includes the signature,
-if present, followed by the file's title, if any.
-
-For more advanced uses with Lisp, refer to the `denote-link'
-function."
-  (declare (interactive-only t))
-  (interactive)
-  (unless (or (denote--file-type-org-extra-p)
-              (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
-    (user-error "The current file type is not recognized by Denote"))
-  (let* ((file (denote-file-prompt "="))
-         (type (denote-filetype-heuristics (buffer-file-name)))
-         (description (denote--link-get-description file)))
-    (denote-link file type description)))
 
 (defun denote-link--collect-identifiers (regexp)
   "Return collection of identifiers in buffer matching REGEXP."
