@@ -121,11 +121,6 @@
 
 ;; About the autoload: (info "(elisp) File Local Variables")
 
-(define-obsolete-variable-alias
-  'denote-user-enforced-denote-directory
-  'denote-directory
-  "2.3.0")
-
 ;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory))))
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
   "Directory for storing personal notes.
@@ -135,8 +130,6 @@ the function `denote-directory' instead."
   :group 'denote
   :safe (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory)))
   :type 'directory)
-
-(define-obsolete-variable-alias 'denote-save-buffer-after-creation 'denote-save-buffers "3.0.0")
 
 (defcustom denote-save-buffers nil
   "Control whether commands that handle new notes save their buffer outright.
@@ -305,11 +298,6 @@ If nil, show the keywords in their given order."
   :group 'denote
   :type 'boolean)
 
-(make-obsolete
- 'denote-allow-multi-word-keywords
- 'denote-file-name-letter-casing
- "2.1.0")
-
 (defcustom denote-file-type nil
   "The file type extension for new notes.
 
@@ -448,8 +436,6 @@ When nil, only show a simple list of file names that link to the
 current note."
   :group 'denote
   :type 'boolean)
-
-(make-obsolete 'denote-rename-no-confirm 'denote-rename-confirmations "3.0.0")
 
 (defcustom denote-rename-confirmations '(rewrite-front-matter modify-file-name)
   "Make renaming commands prompt for confirmations.
@@ -651,11 +637,6 @@ have been warned."
                              (const keyword))
                 :value function))
 
-(make-obsolete
- 'denote-file-name-letter-casing
- 'denote-file-name-slug-functions
- "2.3.0")
-
 (defcustom denote-link-description-function #'denote-link-description-with-signature-and-title
   "Function to create the description of links.
 
@@ -840,11 +821,6 @@ in file names."
      (denote--replace-consecutive-token-characters
       (denote--remove-dot-characters str-slug) component) component)))
 
-(make-obsolete
- 'denote-letter-case
- 'denote-sluggify
- "2.3.0")
-
 (defun denote--slug-put-equals (str)
   "Replace spaces and underscores with equals signs in STR.
 Also replace multiple equals signs with a single one and remove
@@ -869,11 +845,6 @@ any leading and trailing signs."
    (replace-regexp-in-string
     "-" ""
     (denote--slug-hyphenate (denote--slug-no-punct str)))))
-
-(make-obsolete
- 'denote-sluggify-and-join
- 'denote-sluggify-keyword
- "2.3.0")
 
 (defun denote-sluggify-keywords (keywords)
   "Sluggify KEYWORDS, which is a list of strings."
@@ -916,8 +887,6 @@ For our purposes, a note must satisfy `file-regular-p' and
   "Return non-nil if FILE has a Denote identifier."
   (denote-retrieve-filename-signature file))
 
-(make-obsolete 'denote-file-directory-p nil "2.0.0")
-
 (defun denote--file-regular-writable-p (file)
   "Return non-nil if FILE is regular and writable."
   (and (file-regular-p file)
@@ -943,11 +912,6 @@ FILE must be an absolute path."
   "Return existing Denote identifier in STRING, else nil."
   (when (string-match denote-id-regexp string)
     (match-string-no-properties 0 string)))
-
-(define-obsolete-function-alias
-  'denote--default-dir-has-denote-prefix
-  'denote--dir-in-denote-directory-p
-  "2.1.0")
 
 (defun denote--exclude-directory-regexp-p (file)
   "Return non-nil if FILE matches `denote-excluded-directories-regexp'."
@@ -1015,12 +979,6 @@ text files that satisfy `denote-filename-is-note-p'."
       (setq files (seq-filter #'denote-filename-is-note-p files)))
     files))
 
-;; NOTE 2023-11-30: We are declaring `denote-directory-text-only-files'
-;; obsolete, though we keep it around for the foreseeable future.  It
-;; WILL BE REMOVED ahead of version 3.0.0 of Denote, whenever that
-;; happens.
-(make-obsolete 'denote-directory-text-only-files 'denote-directory-files "2.2.0")
-
 (defun denote-directory-text-only-files ()
   "Return list of text files in variable `denote-directory'.
 Filter `denote-directory-files' using `denote-filename-is-note-p'."
@@ -1039,20 +997,10 @@ whatever matches `denote-excluded-directories-regexp'."
            (denote--exclude-directory-regexp-p rel))))
    (denote--directory-all-files-recursively)))
 
-(define-obsolete-variable-alias
-  'denote--encryption-file-extensions
-  'denote-encryption-file-extensions
-  "2.0.0")
-
 ;; TODO 2023-01-24: Perhaps there is a good reason to make this a user
 ;; option, but I am keeping it as a generic variable for now.
 (defvar denote-encryption-file-extensions '(".gpg" ".age")
   "List of strings specifying file extensions for encryption.")
-
-(define-obsolete-function-alias
-  'denote--extensions-with-encryption
-  'denote-file-type-extensions-with-encryption
-  "2.0.0")
 
 (defun denote-file-type-extensions-with-encryption ()
   "Derive `denote-file-type-extensions' plus `denote-encryption-file-extensions'."
@@ -1109,20 +1057,9 @@ something like .org even if the actual file extension is
 The path is relative to DIRECTORY (default: ‘default-directory’)."
   (file-relative-name (denote-get-path-by-id id) directory))
 
-;; NOTE 2023-11-30: We are declaring `denote-directory-files-matching-regexp'
-;; obsolete, though we keep it around for the foreseeable future.  It
-;; WILL BE REMOVED ahead of version 3.0.0 of Denote, whenever that
-;; happens.
-(make-obsolete 'denote-directory-files-matching-regexp 'denote-directory-files "2.2.0")
-
 (defun denote-directory-files-matching-regexp (regexp)
   "Return list of files matching REGEXP in `denote-directory-files'."
   (denote-directory-files regexp))
-
-;; NOTE 2023-11-30: We are declaring `denote-all-files' obsolete,
-;; though we keep it around for the foreseeable future.  It WILL BE
-;; REMOVED ahead of version 3.0.0 of Denote, whenever that happens.
-(make-obsolete 'denote-all-files 'denote-directory-files "2.2.0")
 
 (defun denote-all-files (&optional omit-current)
   "Return the list of Denote files in variable `denote-directory'.
@@ -1210,11 +1147,6 @@ Inferred keywords are filtered by the user option
 (defalias 'denote--keyword-history 'denote-keyword-history
   "Compatibility alias for `denote-keyword-history'.")
 
-(make-obsolete
- 'denote-convert-file-name-keywords-to-crm
- nil
- "3.0.0: Keywords are always returned as a list")
-
 (defun denote--keywords-crm (keywords &optional prompt initial)
   "Use `completing-read-multiple' for KEYWORDS.
 With optional PROMPT, use it instead of a generic text for file
@@ -1243,11 +1175,6 @@ KEYWORDS is a list of strings, per `denote-keywords-prompt'."
   (if denote-sort-keywords
       (sort (copy-sequence keywords) #'string-collate-lessp)
     keywords))
-
-(define-obsolete-function-alias
-  'denote--keywords-combine
-  'denote-keywords-combine
-  "2.1.0")
 
 (defun denote-keywords-combine (keywords)
   "Combine KEYWORDS list of strings into a single string.
@@ -1309,11 +1236,6 @@ identifier: %s
 It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
 ID.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
-
-(define-obsolete-function-alias
-  'denote-surround-with-quotes
-  'denote-format-string-for-md-front-matter
-  "2.3.0")
 
 (defun denote-format-string-for-md-front-matter (s)
   "Surround string S with quotes.
@@ -1552,11 +1474,6 @@ for new note creation.  The default is `org'.")
         (symbol-value prop)
       prop)))
 
-(define-obsolete-function-alias
-  'denote--extensions
-  'denote-file-type-extensions
-  "2.0.0")
-
 (defun denote-file-type-extensions ()
   "Return all file type extensions in `denote-file-types'."
   (delete-dups
@@ -1656,11 +1573,6 @@ To only return an existing identifier, refer to the function
              (t (denote-get-identifier)))))
     (denote--find-first-unused-id id)))
 
-(define-obsolete-function-alias
-  'denote-retrieve-or-create-file-identifier
-  'denote-retrieve-filename-identifier
-  "2.1.0")
-
 (defun denote-retrieve-filename-keywords (file)
   "Extract keywords from FILE name, if present, else return nil.
 Return matched keywords as a single string."
@@ -1750,11 +1662,6 @@ The return value is a list of strings."
 
 (defalias 'denote-retrieve-keywords-line 'denote-retrieve-front-matter-keywords-line
   "Alias for `denote-retrieve-front-matter-keywords-line'.")
-
-(define-obsolete-function-alias
-  'denote--retrieve-title-or-filename
-  'denote-retrieve-title-or-filename
-  "2.3.0")
 
 (defun denote-retrieve-title-or-filename (file type)
   "Return appropriate title for FILE given its TYPE.
@@ -1934,11 +1841,6 @@ where the former does not read dates without a time component."
       (format "%s %s" date (format-time-string "%H:%M:%S" (current-time)))
     date))
 
-(define-obsolete-function-alias
-  'denote--valid-date
-  'denote-valid-date-p
-  "2.3.0")
-
 (defun denote-valid-date-p (date)
   "Return DATE as a valid date.
 A valid DATE is a value that can be parsed by either
@@ -1997,8 +1899,6 @@ available id is found."
     (while (gethash current-id used-ids)
       (setq current-id (denote-get-identifier (time-add (date-to-time current-id) 1))))
     current-id))
-
-(make-obsolete 'denote-barf-duplicate-id nil "2.1.0")
 
 (defvar denote-command-prompt-history nil
   "Minibuffer history for `denote-command-prompt'.")
@@ -2322,11 +2222,6 @@ With optional PROMPT-TEXT use it instead of a generic prompt."
 (defalias 'denote-create-note 'denote
   "Alias for `denote' command.")
 
-(define-obsolete-function-alias
-  'denote--add-prompts
-  'denote-add-prompts
-  "3.0.0")
-
 (defun denote-add-prompts (additional-prompts)
   "Add list of ADDITIONAL-PROMPTS to `denote-prompts'.
 This is best done inside of a `let' to create a wrapper function around
@@ -2588,11 +2483,6 @@ related."
           (delete-region (point) (line-end-position))
           (when save-buffer (save-buffer)))))))
 
-(define-obsolete-function-alias
-  'denote--rewrite-keywords
-  'denote-rewrite-keywords
-  "2.0.0")
-
 (defun denote-rewrite-front-matter (file title keywords file-type)
   "Rewrite front matter of note after `denote-rename-file'.
 The FILE, TITLE, KEYWORDS, and FILE-TYPE are given by the
@@ -2627,11 +2517,6 @@ produce a `y-or-n-p' prompt to that effect."
             (goto-char (line-beginning-position))
             (insert new-keywords-line)
             (delete-region (point) (line-end-position))))))))
-
-(define-obsolete-function-alias
-  'denote--rewrite-front-matter
-  'denote-rewrite-front-matter
-  "2.0.0")
 
 ;;;;; The renaming commands and their prompts
 
@@ -2893,11 +2778,6 @@ Like `denote-rename-file', but prompts only for keywords."
   (let ((denote-prompts '(keywords)))
     (call-interactively #'denote-rename-file)))
 
-(define-obsolete-function-alias 'denote-keywords-add 'denote-rename-file-keywords "3.0.0")
-(define-obsolete-function-alias 'denote-rename-add-keywords 'denote-rename-file-keywords "3.0.0")
-(define-obsolete-function-alias 'denote-keywords-remove 'denote-rename-file-keywords "3.0.0")
-(define-obsolete-function-alias 'denote-rename-rename-keywords 'denote-rename-file-keywords "3.0.0")
-
 (defun denote-rename-file-signature ()
   "Convenience command to change the signature of a file.
 Like `denote-rename-file', but prompts only for the signature."
@@ -2905,9 +2785,6 @@ Like `denote-rename-file', but prompts only for the signature."
   (interactive)
   (let ((denote-prompts '(signature)))
     (call-interactively #'denote-rename-file)))
-
-(define-obsolete-function-alias 'denote-add-signature 'denote-rename-file-signature "3.0.0")
-(define-obsolete-function-alias 'denote-remove-signature 'denote-rename-file-signature "3.0.0")
 
 ;;;###autoload
 (defun denote-dired-rename-files ()
@@ -2930,11 +2807,6 @@ setting `denote-rename-confirmations' to a nil value)."
               (denote--rename-file file title keywords signature date)))
           (denote-update-dired-buffers))
       (user-error "No marked files; aborting"))))
-
-(make-obsolete
- 'denote-dired-rename-marked-files
- 'denote-dired-rename-marked-files-with-keywords
- "2.1.0")
 
 (defalias 'denote-dired-rename-marked-files 'denote-dired-rename-files
   "Alias for `denote-dired-rename-files'.")
@@ -3138,11 +3010,6 @@ relevant front matter.
              (file-type (denote-filetype-heuristics file)))
     (denote--add-front-matter file title keywords id file-type)))
 
-(define-obsolete-function-alias
-  'denote-change-file-type
-  'denote-change-file-type-and-front-matter
-  "2.1.0")
-
 ;;;###autoload
 (defun denote-change-file-type-and-front-matter (file new-file-type)
   "Change file type of FILE and add an appropriate front matter.
@@ -3305,8 +3172,6 @@ and seconds."
      (8 'denote-faces-keywords nil t)
      (9 'denote-faces-extension nil t )))
   "Keywords for fontification of file names.")
-
-(make-obsolete-variable 'denote-faces-file-name-keywords-for-backlinks nil "2.2.0")
 
 (defface denote-faces-prompt-old-name '((t :inherit error))
   "Face for the old name shown in the prompt of `denote-rename-file' etc."
@@ -3496,9 +3361,6 @@ See the `:link' property of `denote-file-types'."
    (denote-retrieve-filename-identifier file)
    description))
 
-(make-obsolete 'denote-link--format-link 'denote-format-link "2.1.0")
-(make-obsolete 'denote-link-signature-format nil "2.3.0")
-
 (defun denote--link-get-description (file)
   "Return link description for FILE."
   (funcall
@@ -3592,11 +3454,6 @@ treats the active region specially, is up to it."
     (unless (derived-mode-p 'org-mode)
       (make-button beg (point) 'type 'denote-link-button))))
 
-(define-obsolete-function-alias
-  'denote-link-insert-link
-  'denote-insert-link
-  "2.0.0")
-
 (defalias 'denote-insert-link 'denote-link
   "Alias for `denote-link' command.")
 
@@ -3656,11 +3513,6 @@ function."
      (denote--completion-table 'file file-names)
      nil t nil 'denote-link-find-file-history)))
 
-(define-obsolete-function-alias
-  'denote-link--find-file-prompt
-  'denote-select-linked-file-prompt
-  "3.0.0")
-
 (defun denote-link-return-links (&optional file)
   "Return list of links in current or optional FILE.
 Also see `denote-link-return-backlinks'."
@@ -3674,11 +3526,6 @@ Also see `denote-link-return-backlinks'."
 
 (defalias 'denote-link-return-forelinks 'denote-link-return-links
   "Alias for `denote-link-return-links'.")
-
-(define-obsolete-function-alias
-  'denote-link-find-file
-  'denote-find-link
-  "2.0.0")
 
 ;;;###autoload
 (defun denote-find-link ()
@@ -3698,11 +3545,6 @@ Also see `denote-link-return-links'."
   (when-let ((current-file (or file (buffer-file-name)))
              (id (denote-retrieve-filename-identifier-with-error current-file)))
     (delete current-file (denote--retrieve-files-in-xrefs id))))
-
-(define-obsolete-function-alias
-  'denote-link-find-backlink
-  'denote-find-backlink
-  "2.0.0")
 
 ;;;###autoload
 (defun denote-find-backlink ()
@@ -3902,11 +3744,6 @@ ACTION is an alist of the form described in the user option
    buf
    `(,@(or action denote-link-backlinks-display-buffer-action))))
 
-(define-obsolete-function-alias
-  'denote-backlinks-next
-  'denote-backlinks-mode-next
-  "2.3.0")
-
 (defun denote-backlinks-mode-next (n)
   "Use appropriate command for forward motion in backlinks buffer.
 With N as a numeric argument, move to the Nth button from point.
@@ -3923,11 +3760,6 @@ matching identifiers."
   (if denote-backlinks-show-context
       (xref-next-line)
     (forward-button n)))
-
-(define-obsolete-function-alias
-  'denote-backlinks-prev
-  'denote-backlinks-mode-previous
-  "2.3.0")
 
 (defun denote-backlinks-mode-previous (n)
   "Use appropriate command for backward motion in backlinks buffer.
@@ -4007,11 +3839,6 @@ concomitant alist, such as `denote-link-backlinks-display-buffer-action'."
                       (denote-link--prepare-backlinks query)))))
     (denote-link--display-buffer buffer-name display-buffer-action)))
 
-(define-obsolete-function-alias
-  'denote-link-backlinks
-  'denote-backlinks
-  "2.0.0")
-
 (defun denote--backlinks-get-buffer-name (file id)
   "Format a buffer name for `denote-backlinks'.
 Use FILE to detect a suitable title with which to name the buffer.  Else
@@ -4036,11 +3863,6 @@ Place the buffer below the current window or wherever the user option
       (when-let ((id (denote-retrieve-filename-identifier-with-error file)))
         (denote-link--prepare-backlinks id nil (denote--backlinks-get-buffer-name file id)))
     (user-error "Buffer `%s' is not associated with a file" (current-buffer))))
-
-(define-obsolete-function-alias
-  'denote-link-show-backlinks-buffer
-  'denote-show-backlinks-buffer
-  "2.0.0")
 
 (defalias 'denote-show-backlinks-buffer 'denote-backlinks
   "Alias for `denote-backlinks' command.")
@@ -4073,11 +3895,6 @@ Otherwise sort lines while accounting for `denote-link-add-links-sort'."
     (unless no-sort
       (sort-lines denote-link-add-links-sort (point-min) (point-max)))
     (buffer-string)))
-
-(define-obsolete-function-alias
-  'denote-link-add-links
-  'denote-add-links
-  "2.0.0")
 
 (defun denote-link--insert-links (files current-file-type &optional id-only no-sort)
   "Insert at point a typographic list of links matching FILES.
@@ -4119,13 +3936,6 @@ inserts links with just the identifier."
 
 (defalias 'denote-link-insert-links-matching-regexp 'denote-add-links
   "Alias for `denote-add-links' command.")
-
-(define-obsolete-function-alias
-  'denote-link-add-missing-links
-  'denote-add-missing-links
-  "2.0.0")
-
-(make-obsolete 'denote-add-missing-links nil "2.2.0")
 
 ;;;;; Links from Dired marks
 
