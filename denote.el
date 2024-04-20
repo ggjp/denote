@@ -872,11 +872,6 @@ text files that satisfy `denote-filename-is-note-p'."
       (setq files (seq-filter #'denote-filename-is-note-p files)))
     files))
 
-(defun denote-directory-text-only-files ()
-  "Return list of text files in variable `denote-directory'.
-Filter `denote-directory-files' using `denote-filename-is-note-p'."
-  (denote-directory-files nil nil :text-only))
-
 (defun denote-directory-subdirectories ()
   "Return list of subdirectories in variable `denote-directory'.
 Omit dotfiles (such as .git) unconditionally.  Also exclude
@@ -956,16 +951,6 @@ something like .org even if the actual file extension is
   "Return relative path of ID string in `denote-directory-files'.
 The path is relative to DIRECTORY (default: ‘default-directory’)."
   (file-relative-name (denote-get-path-by-id id) directory))
-
-(defun denote-directory-files-matching-regexp (regexp)
-  "Return list of files matching REGEXP in `denote-directory-files'."
-  (denote-directory-files regexp))
-
-(defun denote-all-files (&optional omit-current)
-  "Return the list of Denote files in variable `denote-directory'.
-With optional OMIT-CURRENT, do not include the current Denote
-file in the returned list."
-  (denote-directory-files nil omit-current nil))
 
 (defvar denote-file-history nil
   "Minibuffer history of `denote-file-prompt'.")
