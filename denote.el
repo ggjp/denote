@@ -1845,6 +1845,47 @@ Set the value of this variable within the lexical scope of a
 command that needs to supply a default title before calling
 `denote-title-prompt'.")
 
+;; NOTE: The following variables are not defcustom because they are not
+;; meant for customization.  They are meant to be used from Lisp to
+;; create custom Denote commands and related.
+
+(defvar denote-use-title nil
+  "The title to be used in a note-creating command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-keywords 'none
+  "The keywords to be used in a note-creating command.
+See the documentation of `denote' for acceptable values.  If the
+value is the symbol `none', this variable is ignored.  This is
+necessary because nil is a valid value for keywords as it is the
+empty list.")
+
+(defvar denote-use-signature nil
+  "The signature to be used in a note-creating command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-file-type nil
+  "The title to be used in a note-creating command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-directory nil
+  "The directory to be used in a note-creating command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-date nil
+  "The date to be used in a note-creating command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
+(defvar denote-use-template nil
+  "The template to be used in a note-creating command.
+See the documentation of `denote' for acceptable values.
+This variable is ignored if nil.")
+
 (defun denote--command-with-features (command force-use-file-prompt-as-default-title force-ignore-region force-save in-background)
   "Execute file-creating COMMAND with specified features.
 
@@ -1896,8 +1937,13 @@ The path of the newly created file is returned."
 Run the `denote-after-new-note-hook' after creating the new note
 and return its path.
 
-When called interactively, the metadata and file name are prompted
-according to the value of `denote-prompts'.
+When called interactively, the metadata and file name are
+prompted according to the value of `denote-prompts'.
+
+If a `denote-use-*' variable is set, there will be no prompt
+for the corresponding component, regardless of `denote-prompts'.
+For example, if `denote-use-title' is \"My title\", no
+prompting for title is made and that title is used instead.
 
 When called from Lisp, all arguments are optional.
 
@@ -1928,31 +1974,45 @@ When called from Lisp, all arguments are optional.
    (let ((args (make-vector 7 nil)))
      (dolist (prompt denote-prompts)
        (pcase prompt
-         ('title (aset args 0 (denote-title-prompt
-                               (when (and (not denote-ignore-region-in-denote-command)
-                                          (use-region-p))
-                                 (buffer-substring-no-properties
-                                  (region-beginning)
-                                  (region-end))))))
-         ('keywords (aset args 1 (denote-keywords-prompt)))
-         ('file-type (aset args 2 (denote-file-type-prompt)))
-         ('subdirectory (aset args 3 (denote-subdirectory-prompt)))
-         ('date (aset args 4 (denote-date-prompt)))
-         ('template (aset args 5 (denote-template-prompt)))
-         ('signature (aset args 6 (denote-signature-prompt)))))
+         ('title (unless denote-use-title
+                   (aset args 0 (denote-title-prompt
+                                 (when (and (not denote-ignore-region-in-denote-command)
+                                            (use-region-p))
+                                   (buffer-substring-no-properties
+                                    (region-beginning)
+                                    (region-end)))))))
+         ('keywords (when (eq denote-use-keywords 'none)
+                      (aset args 1 (denote-keywords-prompt))))
+         ('file-type (unless denote-use-file-type
+                       (aset args 2 (denote-file-type-prompt))))
+         ('subdirectory (unless denote-use-directory
+                          (aset args 3 (denote-subdirectory-prompt))))
+         ('date (unless denote-use-date
+                  (aset args 4 (denote-date-prompt))))
+         ('template (unless denote-use-template
+                      (aset args 5 (denote-template-prompt))))
+         ('signature (unless denote-use-signature
+                       (aset args 6 (denote-signature-prompt))))))
      (append args nil)))
-  (let* ((title (or title ""))
-         (file-type (denote--valid-file-type (or file-type denote-file-type)))
-         (kws (denote-keywords-sort keywords))
-         (date (denote-parse-date date))
+  (let* ((selected-title (or denote-use-title title))
+         (selected-keywords (if (eq denote-use-keywords 'none) keywords denote-use-keywords))
+         (selected-date (or denote-use-date date))
+         (selected-directory (or denote-use-directory subdirectory))
+         (selected-template (or denote-use-template template))
+         (selected-signature (or denote-use-signature signature))
+         (selected-file-type (or denote-use-file-type file-type))
+         (title (or selected-title ""))
+         (file-type (denote--valid-file-type (or selected-file-type denote-file-type)))
+         (kws (denote-keywords-sort selected-keywords))
+         (date (denote-parse-date selected-date))
          (id (denote--find-first-unused-id (denote-get-identifier date)))
-         (directory (if (denote--dir-in-denote-directories-p subdirectory)
-                        (file-name-as-directory subdirectory)
+         (directory (if (denote--dir-in-denote-directories-p selected-directory)
+                        (file-name-as-directory selected-directory)
                       (car (denote-directories))))
-         (template (if (stringp template)
-                       template
-                     (or (alist-get template denote-templates) "")))
-         (signature (or signature ""))
+         (template (if (stringp selected-template)
+                       selected-template
+                     (or (alist-get selected-template denote-templates) "")))
+         (signature (or selected-signature ""))
          (note-path (denote--prepare-note title kws date id directory file-type template signature)))
     (when denote-save-buffers (save-buffer))
     (denote--keywords-add-to-history keywords)
@@ -4029,40 +4089,52 @@ The file is populated with Denote's front matter.  It can then be
 expanded with the usual specifiers or strings that
 `org-capture-templates' supports.
 
-This function obeys `denote-prompts', but it ignores `file-type',
-if present: it always sets the Org file extension for the created
-note to ensure that the capture process works as intended,
-especially for the desired output of the
-`denote-org-capture-specifiers' (which can include arbitrary
-text).
+This function obeys `denote-prompts' and `denote-use-*'
+variables, but it ignores `file-type', if present: it always sets
+the Org file extension for the created note to ensure that the
+capture process works as intended, especially for the desired
+output of the `denote-org-capture-specifiers' (which can include
+arbitrary text).
 
 Consult the manual for template samples."
   (let (title keywords subdirectory date template signature)
     (dolist (prompt denote-prompts)
       (pcase prompt
-        ('title (setq title (denote-title-prompt
-                             (when (use-region-p)
-                               (buffer-substring-no-properties
-                                (region-beginning)
-                                (region-end))))))
-        ('keywords (setq keywords (denote-keywords-prompt)))
-        ('subdirectory (setq subdirectory (denote-subdirectory-prompt)))
-        ('date (setq date (denote-date-prompt)))
-        ('template (setq template (denote-template-prompt)))
-        ('signature (setq signature (denote-signature-prompt)))))
-    (let* ((title (or title ""))
-           (date (if (or (null date) (string-empty-p date))
+        ('title (unless denote-use-title
+                  (setq title (denote-title-prompt
+                               (when (use-region-p)
+                                 (buffer-substring-no-properties
+                                  (region-beginning)
+                                  (region-end)))))))
+        ('keywords (when (eq denote-use-keywords 'none)
+                     (setq keywords (denote-keywords-prompt))))
+        ('subdirectory (unless denote-use-directory
+                         (setq subdirectory (denote-subdirectory-prompt))))
+        ('date (unless denote-use-date
+                 (setq date (denote-date-prompt))))
+        ('template (unless denote-use-template
+                     (setq template (denote-template-prompt))))
+        ('signature (unless denote-use-signature
+                      (setq signature (denote-signature-prompt))))))
+    (let* ((selected-title (or denote-use-title title))
+           (selected-keywords (if (eq denote-use-keywords 'none) keywords denote-use-keywords))
+           (selected-date (or denote-use-date date))
+           (selected-directory (or denote-use-directory subdirectory))
+           (selected-template (or denote-use-template template))
+           (selected-signature (or denote-use-signature signature))
+           (title (or selected-title ""))
+           (date (if (or (null selected-date) (string-empty-p selected-date))
                      (current-time)
-                   (denote-valid-date-p date)))
+                   (denote-valid-date-p selected-date)))
            (id (denote--find-first-unused-id (denote-get-identifier date)))
-           (keywords (denote-keywords-sort keywords))
-           (directory (if (denote--dir-in-denote-directories-p subdirectory)
-                          (file-name-as-directory subdirectory)
+           (keywords (denote-keywords-sort selected-keywords))
+           (directory (if (denote--dir-in-denote-directories-p selected-directory)
+                          (file-name-as-directory selected-directory)
                         (car (denote-directories))))
-           (template (if (stringp template)
-                         template
-                       (or (alist-get template denote-templates) "")))
-           (signature (or signature ""))
+           (template (if (stringp selected-template)
+                         selected-template
+                       (or (alist-get selected-template denote-templates) "")))
+           (signature (or selected-signature ""))
            (front-matter (denote--format-front-matter
                           title (denote--date nil 'org) keywords
                           (denote-get-identifier) 'org)))
