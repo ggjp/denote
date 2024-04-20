@@ -121,14 +121,14 @@
 
 ;; About the autoload: (info "(elisp) File Local Variables")
 
-;;;###autoload (put 'denote-directory 'safe-local-variable (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory))))
+;;;###autoload (put 'denote-directory 'safe-local-variable #'stringp)
 (defcustom denote-directory (expand-file-name "~/Documents/notes/")
   "Directory for storing personal notes.
 
 If you intend to reference this variable in Lisp, consider using
 the function `denote-directory' instead."
   :group 'denote
-  :safe (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory)))
+  :safe #'stringp
   :type 'directory)
 
 (defcustom denote-save-buffers nil
@@ -651,16 +651,6 @@ Like `denote--completion-table' but also disable sorting."
                    (display-sort-function . ,#'identity))
       (complete-with-action action candidates string pred))))
 
-(defun denote--default-directory-is-silo-p ()
-  "Return path to silo if `default-directory' is a silo."
-  (when-let ((dir-locals (dir-locals-find-file default-directory))
-             ((alist-get 'denote-directory dir-local-variables-alist)))
-    (cond
-     ((listp dir-locals)
-      (car dir-locals))
-     ((stringp dir-locals)
-      dir-locals))))
-
 (defun denote--make-denote-directory ()
   "Make the variable `denote-directory' and its parents, if needed."
   (when (not (file-directory-p denote-directory))
@@ -670,17 +660,9 @@ Like `denote--completion-table' but also disable sorting."
   "Return path of variable `denote-directory' as a proper directory.
 Custom Lisp code can `let' bind the variable `denote-directory'
 to override what this function returns."
-  ;; NOTE 2024-02-09: We may want to remove this condition eventually.
-  ;; The reason is that we want to stop supporting the dir-local
-  ;; values of `default-directory' or `local' in favour of just
-  ;; specifying a string.  I don't think we can delete this altogether
-  ;; though, as it will break existing configurations.
-  (if-let (((or (eq denote-directory 'default-directory) (eq denote-directory 'local)))
-           (silo-dir (denote--default-directory-is-silo-p)))
-      silo-dir
-    (let ((denote-directory (file-name-as-directory (expand-file-name denote-directory))))
-      (denote--make-denote-directory)
-      denote-directory)))
+  (let ((denote-directory (file-name-as-directory (expand-file-name denote-directory))))
+    (denote--make-denote-directory)
+    denote-directory))
 
 (defun denote--slug-no-punct (str)
   "Remove punctuation from STR.
