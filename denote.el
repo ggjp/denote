@@ -1122,14 +1122,10 @@ It is passed to `format' with arguments TITLE, DATE, KEYWORDS,
 ID.  Advanced users are advised to consult Info node `(denote)
 Change the front matter format'.")
 
-(defun denote-format-string-for-md-front-matter (s)
+(defun denote-surround-with-quotes (s)
   "Surround string S with quotes.
-If S is not a string, return a literal emptry string.
-
 This can be used in `denote-file-types' to format front mattter."
-  (if (stringp s)
-      (format "%S" s)
-    "\"\""))
+  (format "%S" s))
 
 (defun denote-trim-whitespace (s)
   "Trim whitespace around string S.
@@ -1145,11 +1141,6 @@ This can be used in `denote-file-types' to format front mattter."
   "Trim whitespace then quotes around string S.
 This can be used in `denote-file-types' to format front mattter."
   (denote--trim-quotes (denote-trim-whitespace s)))
-
-(defun denote-format-string-for-org-front-matter (s)
-  "Return string S as-is for Org or plain text front matter.
-If S is not a string, return an empty string."
-  (if (stringp s) s ""))
 
 (defun denote-format-keywords-for-md-front-matter (keywords)
   "Format front matter KEYWORDS for markdown file type.
@@ -1184,7 +1175,7 @@ Consult the `denote-file-types' for how this is used."
      :date-function denote-date-org-timestamp
      :front-matter denote-org-front-matter
      :title-key-regexp "^#\\+title\\s-*:"
-     :title-value-function denote-format-string-for-org-front-matter
+     :title-value-function identity
      :title-value-reverse-function denote-trim-whitespace
      :keywords-key-regexp "^#\\+filetags\\s-*:"
      :keywords-value-function denote-format-keywords-for-org-front-matter
@@ -1196,7 +1187,7 @@ Consult the `denote-file-types' for how this is used."
      :date-function denote-date-rfc3339
      :front-matter denote-yaml-front-matter
      :title-key-regexp "^title\\s-*:"
-     :title-value-function denote-format-string-for-md-front-matter
+     :title-value-function denote-surround-with-quotes
      :title-value-reverse-function denote-trim-whitespace-then-quotes
      :keywords-key-regexp "^tags\\s-*:"
      :keywords-value-function denote-format-keywords-for-md-front-matter
@@ -1208,7 +1199,7 @@ Consult the `denote-file-types' for how this is used."
      :date-function denote-date-rfc3339
      :front-matter denote-toml-front-matter
      :title-key-regexp "^title\\s-*="
-     :title-value-function denote-format-string-for-md-front-matter
+     :title-value-function denote-surround-with-quotes
      :title-value-reverse-function denote-trim-whitespace-then-quotes
      :keywords-key-regexp "^tags\\s-*="
      :keywords-value-function denote-format-keywords-for-md-front-matter
@@ -1220,7 +1211,7 @@ Consult the `denote-file-types' for how this is used."
      :date-function denote-date-iso-8601
      :front-matter denote-text-front-matter
      :title-key-regexp "^title\\s-*:"
-     :title-value-function denote-format-string-for-org-front-matter
+     :title-value-function identity
      :title-value-reverse-function denote-trim-whitespace
      :keywords-key-regexp "^tags\\s-*:"
      :keywords-value-function denote-format-keywords-for-text-front-matter
@@ -1601,9 +1592,9 @@ EXTENSION is a string that contains a dot followed by the file
 type extension.  It can be an empty string or a nil value, in
 which case it is not added to the base file name."
   (let ((file-name (concat dir-path id)))
-    (when (and signature (not (string-empty-p signature)))
+    (when (not (string-empty-p signature))
       (setq file-name (concat file-name "==" (denote-sluggify 'signature signature))))
-    (when (and title (not (string-empty-p title)))
+    (when (not (string-empty-p title))
       (setq file-name (concat file-name "--" (denote-sluggify 'title title))))
     (when keywords
       (setq file-name (concat file-name "__" (denote-keywords-combine (denote-sluggify-keywords keywords)))))
