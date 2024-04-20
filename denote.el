@@ -1641,19 +1641,6 @@ the base file name.
 EXTENSION is a string that contains a dot followed by the file
 type extension.  It can be an empty string or a nil value, in
 which case it is not added to the base file name."
-  (cond
-   ((null dir-path)
-    (error "DIR-PATH must not be nil"))
-   ((string-empty-p dir-path)
-    (error "DIR-PATH must not be an empty string"))
-   ((not (string-suffix-p "/" dir-path))
-    (error "DIR-PATH does not end with a / as directories ought to"))
-   ((null id)
-    (error "ID must not be nil"))
-   ((string-empty-p id)
-    (error "ID must not be an empty string"))
-   ((not (string-match-p denote-id-regexp id))
-    (error "ID `%s' does not match `denote-id-regexp'" id)))
   (let ((file-name (concat dir-path id)))
     (when (and signature (not (string-empty-p signature)))
       (setq file-name (concat file-name "==" (denote-sluggify 'signature signature))))
