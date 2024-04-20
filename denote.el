@@ -968,6 +968,12 @@ something like .org even if the actual file extension is
           (denote-directory-files))))
     (if (length< files 2)
         (car files)
+      ;; In principle, there should not exist duplicate identifiers.
+      ;; However, when exporting a note, another file with the same file
+      ;; name can be created.  This happens mostly with org.  Thus, we
+      ;; return the first item that has the same type as
+      ;; `denote-file-type'.  If none found, the first org file.  Else,
+      ;; the first item found.
       (seq-find
        (lambda (file)
          (let ((file-extension (denote-get-file-extension file)))
@@ -976,7 +982,8 @@ something like .org even if the actual file extension is
                              file-extension)
                     (string= ".org" file-extension)
                     (member file-extension (denote-file-type-extensions))))))
-       files))))
+       files
+       (car files)))))
 
 (defun denote-get-relative-path-by-id (id &optional directory)
   "Return relative path of ID string in `denote-directory-files'.
