@@ -160,7 +160,7 @@ Also see user options: `denote-infer-keywords',
   :safe #'listp
   :type '(repeat string))
 
-;;;###autoload (put 'denote-infer-keywords 'safe-local-variable (lambda (val) (or val (null val))))
+;;;###autoload (put 'denote-infer-keywords 'safe-local-variable (lambda (_) t))
 (defcustom denote-infer-keywords t
   "Whether to infer keywords from existing notes' file names.
 
@@ -186,7 +186,7 @@ are specific to the given silo.
 For advanced Lisp usage, the function `denote-keywords' returns
 the appropriate list of strings."
   :group 'denote
-  :safe (lambda (val) (or val (null val)))
+  :safe (lambda (_) t)
   :type 'boolean)
 
 (defcustom denote-prompts '(title keywords)
