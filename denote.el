@@ -355,8 +355,7 @@ are described in the doc string of `format-time-string'."
 If non-nil, use `org-read-date'.  If nil, input the date as a
 string, as described in `denote'.
 
-This option is relevant when `denote-prompts' includes a `date'
-and/or when the user invokes the command `denote-date'."
+This option is relevant when `denote-prompts' includes a `date'."
   :group 'denote
   :type 'boolean)
 
@@ -418,10 +417,9 @@ Templates are expressed as a (KEY . STRING) association.
   Denote contains examples on how to use the `concat' function,
   beside writing a generic string.
 
-The user can choose a template either by invoking the command
-`denote-template' or by changing the user option `denote-prompts'
-to always prompt for a template when calling the `denote'
-command."
+The user can choose a template either by changing the user option
+`denote-prompts' to always prompt for a template when calling the
+`denote' command."
   :type '(alist :key-type symbol :value-type string)
   :group 'denote)
 
@@ -477,8 +475,7 @@ from all functions that check the contents of the variable
 `denote-directory'.  The regexp needs to match only the name of
 the directory, not its full path.
 
-File prompts are used by several commands, such as `denote-link'
-and `denote-subdirectory'.
+File prompts are used by several commands, such as `denote-link'.
 
 Functions that check for files include `denote-directory-files'
 and `denote-directory-subdirectories'.
@@ -498,10 +495,7 @@ The match is performed with `string-match-p'."
   :type 'string)
 
 (defcustom denote-after-new-note-hook nil
-  "Normal hook that runs after the `denote' command.
-This also covers all convenience functions that call `denote'
-internally, such as `denote-signature' and `denote-type' (check
-the default value of the user option `denote-commands-for-new-notes')."
+  "Normal hook that runs after the `denote' command."
   :group 'denote
   :type 'hook)
 
@@ -582,19 +576,6 @@ minibuffer completion, due to the specifics of their data.
 Also see `denote-prompts'."
   :type 'boolean
   :group 'denote)
-
-(defcustom denote-commands-for-new-notes
-  '(denote
-    denote-date
-    denote-subdirectory
-    denote-template
-    denote-type
-    denote-signature)
-  "List of commands for `denote-command-prompt' that create a new note.
-These are used by commands such as `denote-open-or-create-with-command'
-and `denote-link-after-creating-with-command'."
-  :group 'denote
-  :type '(repeat symbol))
 
 (defcustom denote-file-name-slug-functions
   '((title . denote-sluggify-title)
@@ -1888,21 +1869,6 @@ available id is found."
       (setq current-id (denote-get-identifier (time-add (date-to-time current-id) 1))))
     current-id))
 
-(defvar denote-command-prompt-history nil
-  "Minibuffer history for `denote-command-prompt'.")
-
-(defalias 'denote--command-prompt-history 'denote-command-prompt-history
-  "Compatibility alias for `denote-command-prompt-history'.")
-
-(defun denote-command-prompt ()
-  "Prompt for command among `denote-commands-for-new-notes'."
-  (let ((default (car denote-command-prompt-history)))
-    (intern
-     (completing-read
-      (format-prompt "Run note-creating Denote command" default)
-      denote-commands-for-new-notes nil :require-match
-      nil 'denote-command-prompt-history default))))
-
 ;;;;; The `denote' command and its prompts
 
 (defun denote--prompt-with-completion-p (fn)
@@ -2205,82 +2171,6 @@ With optional PROMPT-TEXT use it instead of a generic prompt."
    (format-prompt (or prompt-text "Match files with the given REGEXP") nil)
    denote-files-matching-regexp-history))
 
-;;;;; Convenience commands as `denote' variants
-
-(defun denote-add-prompts (additional-prompts)
-  "Add list of ADDITIONAL-PROMPTS to `denote-prompts'.
-This is best done inside of a `let' to create a wrapper function around
-`denote', `denote-rename-file', and generally any command that consults
-the value of `denote-prompts'."
-  (seq-union additional-prompts denote-prompts))
-
-;;;###autoload
-(defun denote-type ()
-  "Create note while prompting for a file type.
-
-This is the equivalent of calling `denote' when `denote-prompts'
-has the `file-type' prompt appended to its existing prompts."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts (denote-add-prompts '(file-type))))
-    (call-interactively #'denote)))
-
-;;;###autoload
-(defun denote-date ()
-  "Create note while prompting for a date.
-
-The date can be in YEAR-MONTH-DAY notation like 2022-06-30 or
-that plus the time: 2022-06-16 14:30.  When the user option
-`denote-date-prompt-use-org-read-date' is non-nil, the date
-prompt uses the more powerful Org+calendar system.
-
-This is the equivalent of calling `denote' when `denote-prompts'
-has the `date' prompt appended to its existing prompts."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts (denote-add-prompts '(date))))
-    (call-interactively #'denote)))
-
-;;;###autoload
-(defun denote-subdirectory ()
-  "Create note while prompting for a subdirectory.
-
-Available candidates include the value of the variable
-`denote-directory' and any subdirectory thereof.
-
-This is the equivalent of calling `denote' when `denote-prompts'
-has the `subdirectory' prompt appended to its existing prompts."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts (denote-add-prompts '(subdirectory))))
-    (call-interactively #'denote)))
-
-;;;###autoload
-(defun denote-template ()
-  "Create note while prompting for a template.
-
-Available candidates include the keys in the `denote-templates'
-alist.  The value of the selected key is inserted in the newly
-created note after the front matter.
-
-This is the equivalent of calling `denote' when `denote-prompts'
-has the `template' prompt appended to its existing prompts."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts (denote-add-prompts '(template))))
-    (call-interactively #'denote)))
-
-;;;###autoload
-(defun denote-signature ()
-  "Create note while prompting for a file signature.
-
-This is the equivalent of calling `denote' when `denote-prompts'
-has the `signature' prompt appended to its existing prompts."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((denote-prompts (denote-add-prompts '(signature))))
-    (call-interactively #'denote)))
-
 ;;;###autoload
 (defun denote-region ()
   "Call `denote' and insert therein the text of the active region."
@@ -2298,8 +2188,6 @@ has the `signature' prompt appended to its existing prompts."
         (run-hook-with-args 'denote-region-after-new-note-functions (mark) (point)))
     (call-interactively 'denote)))
 
-;;;;; Other convenience commands
-
 ;;;###autoload
 (defun denote-open-or-create (target)
   "Visit TARGET file in variable `denote-directory'.
@@ -2310,16 +2198,6 @@ prompt."
   (if (and target (file-exists-p target))
       (find-file target)
     (denote--command-with-features #'denote :use-last-input-as-def-title nil nil nil)))
-
-;;;###autoload
-(defun denote-open-or-create-with-command ()
-  "Like `denote-open-or-create' but use one of the `denote-commands-for-new-notes'."
-  (declare (interactive-only t))
-  (interactive)
-  (let ((target (denote-file-prompt nil nil :no-require-match)))
-    (if (and target (file-exists-p target))
-        (find-file target)
-      (denote--command-with-features (denote-command-prompt) :use-file-prompt-as-def-title nil nil nil))))
 
 ;;;; Note modification
 
@@ -3554,26 +3432,6 @@ file.  Though see `denote-save-buffer-after-creation'."
     (denote-link path type description id-only)))
 
 ;;;###autoload
-(defun denote-link-after-creating-with-command (command &optional id-only)
-  "Like `denote-link-after-creating' but prompt for note-making COMMAND.
-Use this to, for example, call `denote-signature' so that the
-newly created note has a signature as part of its file name.
-
-Optional ID-ONLY has the same meaning as in the command
-`denote-link-after-creating'."
-  (interactive
-   (list
-    (denote-command-prompt)
-    current-prefix-arg))
-  (unless (or (denote--file-type-org-extra-p)
-              (and buffer-file-name (denote-file-has-supported-extension-p buffer-file-name)))
-    (user-error "The current file type is not recognized by Denote"))
-  (let* ((type (denote-filetype-heuristics (buffer-file-name)))
-         (path (denote--command-with-features command nil nil :save :in-background))
-         (description (denote--link-get-description path)))
-    (denote-link path type description id-only)))
-
-;;;###autoload
 (defun denote-link-or-create (target &optional id-only)
   "Use `denote-link' on TARGET file, creating it if necessary.
 
@@ -4159,40 +4017,6 @@ Consult the manual for template samples."
         (user-error "A file named `%s' already exists" denote-last-path))
       (denote--keywords-add-to-history keywords)
       (concat front-matter template denote-org-capture-specifiers))))
-
-;; TODO 2023-12-02: Maybe simplify `denote-org-capture-with-prompts'
-;; by passing a single PROMPTS that is the same value as `denote-prompts'?
-
-;;;###autoload
-(defun denote-org-capture-with-prompts (&optional title keywords subdirectory date template)
-  "Like `denote-org-capture' but with optional prompt parameters.
-
-When called without arguments, do not prompt for anything.  Just
-return the front matter with title and keyword fields empty and
-the date and identifier fields specified.  Also make the file
-name consist of only the identifier plus the Org file name
-extension.
-
-Otherwise produce a minibuffer prompt for every non-nil value
-that corresponds to the TITLE, KEYWORDS, SUBDIRECTORY, DATE, and
-TEMPLATE arguments.  The prompts are those used by the standard
-`denote' command and all of its utility commands.
-
-When returning the contents that fill in the Org capture
-template, the sequence is as follows: front matter, TEMPLATE, and
-then the value of the user option `denote-org-capture-specifiers'.
-
-Important note: in the case of SUBDIRECTORY actual subdirectories
-must exist---Denote does not create them.  Same principle for
-TEMPLATE as templates must exist and are specified in the user
-option `denote-templates'."
-  (let ((denote-prompts '()))
-    (when template (push 'template denote-prompts))
-    (when date (push 'date denote-prompts))
-    (when subdirectory (push 'subdirectory denote-prompts))
-    (when keywords (push 'keywords denote-prompts))
-    (when title (push 'title denote-prompts))
-    (denote-org-capture)))
 
 (defun denote-org-capture-delete-empty-file ()
   "Delete file if capture with `denote-org-capture' is aborted."
