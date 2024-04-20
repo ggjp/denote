@@ -633,13 +633,6 @@ The note's ID is derived from the date and time of its creation.")
   "Punctionation that is removed from file names.
 We consider those characters illegal for our purposes.")
 
-(defvar denote-excluded-punctuation-extra-regexp nil
-  "Additional punctuation that is removed from file names.
-This variable is for advanced users who need to extend the
-`denote-excluded-punctuation-regexp'.  Once we have a better
-understanding of what we should be omitting, we will update
-things accordingly.")
-
 ;;;; File helper functions
 
 (defun denote--completion-table (category candidates)
@@ -689,20 +682,13 @@ to override what this function returns."
       (denote--make-denote-directory)
       denote-directory)))
 
-(defun denote--slug-no-punct (str &optional extra-characters)
+(defun denote--slug-no-punct (str)
   "Remove punctuation from STR.
 Concretely, replace with an empty string anything that matches
-the `denote-excluded-punctuation-regexp' and
-`denote-excluded-punctuation-extra-regexp'.
-
-EXTRA-CHARACTERS is an optional string that has the same meaning
-as the aforementioned variables."
-  (dolist (regexp (list denote-excluded-punctuation-regexp
-                        denote-excluded-punctuation-extra-regexp
-                        extra-characters))
-    (when (stringp regexp)
-      (setq str (replace-regexp-in-string regexp "" str))))
-  str)
+the `denote-excluded-punctuation-regexp'."
+  (if (stringp denote-excluded-punctuation-regexp)
+      (replace-regexp-in-string denote-excluded-punctuation-regexp "" str)
+    str))
 
 (defun denote--slug-no-punct-for-signature (str &optional extra-characters)
   "Remove punctuation (except = signs) from STR.
