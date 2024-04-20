@@ -556,8 +556,8 @@ Also see `denote-prompts'."
 
 (defcustom denote-file-name-slug-functions
   '((title . denote-sluggify-title)
-    (signature . denote-sluggify-signature)
-    (keyword . denote-sluggify-keyword))
+    (signature . identity)
+    (keyword . identity))
   "Specify the method Denote uses to format the components of the file name.
 
 The value is an alist where each element is a cons cell of the
@@ -579,8 +579,7 @@ Note that the `keyword' function is also applied to the keywords
 of the front matter.
 
 By default, if a function is not specified for a component, we
-use `denote-sluggify-title', `denote-sluggify-keyword' and
-`denote-sluggify-signature'.
+use `denote-sluggify-title' for the title.
 
 Remember that deviating from the default file-naming scheme of Denote
 will make things harder to search in the future, as files can/will have
@@ -671,21 +670,6 @@ the `denote-excluded-punctuation-regexp'."
       (replace-regexp-in-string denote-excluded-punctuation-regexp "" str)
     str))
 
-(defun denote--slug-no-punct-for-signature (str &optional extra-characters)
-  "Remove punctuation (except = signs) from STR.
-
-This works the same way as `denote--slug-no-punct', except that =
-signs are not removed from STR.
-
-EXTRA-CHARACTERS is an optional string.  See
-`denote--slug-no-punct' for its documentation."
-  (dolist (regexp (list denote-excluded-punctuation-regexp
-                        denote-excluded-punctuation-extra-regexp
-                        extra-characters))
-    (when (stringp regexp)
-      (setq str (replace-regexp-in-string (string-replace "=" "" regexp) "" str))))
-  str)
-
 (defun denote--slug-hyphenate (str)
   "Replace spaces and underscores with hyphens in STR.
 Also replace multiple hyphens with a single one and remove any
@@ -740,9 +724,9 @@ in file names."
                          ((eq component 'keyword)
                           (replace-regexp-in-string
                            "_" ""
-                           (funcall (or slug-function #'denote-sluggify-keyword) str)))
+                           (funcall (or slug-function #'identity) str)))
                          ((eq component 'signature)
-                          (funcall (or slug-function #'denote-sluggify-signature) str)))))
+                          (funcall (or slug-function #'identity) str)))))
     (denote--trim-right-token-characters
      (denote--replace-consecutive-token-characters
       (denote--remove-dot-characters str-slug) component) component)))
@@ -760,17 +744,6 @@ any leading and trailing signs."
 (defun denote-sluggify-title (str)
   "Make STR an appropriate slug for title."
   (downcase (denote--slug-hyphenate (denote--slug-no-punct str))))
-
-(defun denote-sluggify-signature (str)
-  "Make STR an appropriate slug for signature."
-  (downcase (denote--slug-put-equals (denote--slug-no-punct-for-signature str "-+"))))
-
-(defun denote-sluggify-keyword (str)
-  "Sluggify STR while joining separate words."
-  (downcase
-   (replace-regexp-in-string
-    "-" ""
-    (denote--slug-hyphenate (denote--slug-no-punct str)))))
 
 (defun denote-sluggify-keywords (keywords)
   "Sluggify KEYWORDS, which is a list of strings."
