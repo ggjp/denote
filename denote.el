@@ -115,9 +115,7 @@
 
 (defgroup denote ()
   "Simple notes with an efficient file-naming scheme."
-  :group 'files
-  :link '(info-link "(denote) Top")
-  :link '(url-link :tag "Homepage" "https://protesilaos.com/emacs/denote"))
+  :group 'files)
 
 ;;;; User options
 
@@ -136,7 +134,6 @@ If you intend to reference this variable in Lisp, consider using
 the function `denote-directory' instead."
   :group 'denote
   :safe (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory)))
-  :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
 
 (define-obsolete-variable-alias 'denote-save-buffer-after-creation 'denote-save-buffers "3.0.0")
@@ -287,7 +284,6 @@ specifies, based on the supplied arguments.
 
 Also see `denote-history-completion-in-prompts'."
   :group 'denote
-  :link '(info-link "(denote) The denote-prompts option")
   :type '(radio (const :tag "Use no prompts" nil)
                 (set :tag "Available prompts" :greedy t
                      (const :tag "Title" title)
@@ -439,7 +435,6 @@ The user can choose a template either by invoking the command
 to always prompt for a template when calling the `denote'
 command."
   :type '(alist :key-type symbol :value-type string)
-  :link '(info-link "(denote) The denote-templates option")
   :group 'denote)
 
 (defcustom denote-backlinks-show-context nil
@@ -522,7 +517,6 @@ This also covers all convenience functions that call `denote'
 internally, such as `denote-signature' and `denote-type' (check
 the default value of the user option `denote-commands-for-new-notes')."
   :group 'denote
-  :link '(info-link "(denote) Standard note creation")
   :type 'hook)
 
 (defcustom denote-after-rename-file-hook nil
@@ -534,7 +528,6 @@ This affects the behaviour of the commands `denote-rename-file',
 `denote-keywords-add', `denote-keywords-remove', and any other
 command that builds on top of them."
   :group 'denote
-  :link '(info-link "(denote) Renaming files")
   :type 'hook)
 
 (defcustom denote-region-after-new-note-functions nil
@@ -559,7 +552,6 @@ structure template as soon as `denote-region' is done:
     (add-hook \\='denote-region-after-new-note-functions
               #\\='my-denote-region-org-structure-template)"
   :group 'denote
-  :link '(info-link "(denote) Create a note with the region's contents")
   :type 'hook)
 
 (defvar denote-prompts-with-history-as-completion
@@ -616,7 +608,6 @@ Also see `denote-prompts'."
 These are used by commands such as `denote-open-or-create-with-command'
 and `denote-link-after-creating-with-command'."
   :group 'denote
-  :link '(info-link "(denote) Choose which commands to prompt for")
   :type '(repeat symbol))
 
 (defcustom denote-file-name-slug-functions
@@ -655,7 +646,6 @@ reason: they are the distillation of years of experience.  Here we give
 you what you wish, but bear in mind it may not be what you need.  You
 have been warned."
   :group 'denote
-  :link '(info-link "(denote) User-defined sluggification of file name components")
   :type '(alist :key (choice (const title)
                              (const signature)
                              (const keyword))
@@ -3345,13 +3335,11 @@ If `denote-dired-directories-include-subdirectories' is non-nil,
 also apply the effect to all subdirectories of those specified in
 the list."
   :type '(repeat directory)
-  :link '(info-link "(denote) Fontification in Dired")
   :group 'denote-dired)
 
 (defcustom denote-dired-directories-include-subdirectories nil
   "If non-nil `denote-dired-directories' also affects all subdirectories.
 Otherwise `denote-dired-directories' works only with exact matches."
-  :link '(info-link "(denote) Fontification in Dired")
   :type 'boolean
   :group 'denote-dired)
 
