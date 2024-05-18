@@ -136,7 +136,6 @@ If you intend to reference this variable in Lisp, consider using
 the function `denote-directory' instead."
   :group 'denote
   :safe (lambda (val) (or (stringp val) (eq val 'local) (eq val 'default-directory)))
-  :package-version '(denote . "2.0.0")
   :link '(info-link "(denote) Maintain separate directories for notes")
   :type 'directory)
 
@@ -159,7 +158,6 @@ saved automatically.  The assumption is that the user who opts in
 to this feature is familiar with the `denote-rename-file'
 operation (or related) and knows it is reliable."
   :group 'denote
-  :package-version '(denote . "3.0.0")
   :type 'boolean)
 
 ;;;###autoload (put 'denote-known-keywords 'safe-local-variable #'listp)
@@ -170,7 +168,6 @@ Also see user options: `denote-infer-keywords',
 `denote-sort-keywords', `denote-file-name-slug-functions'."
   :group 'denote
   :safe #'listp
-  :package-version '(denote . "0.1.0")
   :type '(repeat string))
 
 ;;;###autoload (put 'denote-infer-keywords 'safe-local-variable (lambda (val) (or val (null val))))
@@ -200,7 +197,6 @@ For advanced Lisp usage, the function `denote-keywords' returns
 the appropriate list of strings."
   :group 'denote
   :safe (lambda (val) (or val (null val)))
-  :package-version '(denote . "0.1.0")
   :type 'boolean)
 
 (defcustom denote-prompts '(title keywords)
@@ -291,7 +287,6 @@ specifies, based on the supplied arguments.
 
 Also see `denote-history-completion-in-prompts'."
   :group 'denote
-  :package-version '(denote . "2.3.0")
   :link '(info-link "(denote) The denote-prompts option")
   :type '(radio (const :tag "Use no prompts" nil)
                 (set :tag "Available prompts" :greedy t
@@ -312,7 +307,6 @@ minibuffer prompt.
 
 If nil, show the keywords in their given order."
   :group 'denote
-  :package-version '(denote . "0.1.0")
   :type 'boolean)
 
 (make-obsolete
@@ -347,7 +341,6 @@ technicalities."
           (const :tag "Markdown (YAML front matter)" markdown-yaml)
           (const :tag "Markdown (TOML front matter)" markdown-toml)
           (const :tag "Plain text" text))
-  :package-version '(denote . "0.6.0")
   :group 'denote)
 
 (defcustom denote-date-format nil
@@ -370,7 +363,6 @@ are described in the doc string of `format-time-string'."
   :type '(choice
           (const :tag "Use appropiate format for each file type" nil)
           (string :tag "Custom format for `format-time-string'"))
-  :package-version '(denote . "0.2.0")
   :group 'denote)
 
 (defcustom denote-date-prompt-use-org-read-date nil
@@ -382,7 +374,6 @@ string, as described in `denote'.
 This option is relevant when `denote-prompts' includes a `date'
 and/or when the user invokes the command `denote-date'."
   :group 'denote
-  :package-version '(denote . "0.6.0")
   :type 'boolean)
 
 (defcustom denote-org-store-link-to-heading t
@@ -426,7 +417,6 @@ it, use the command `org-insert-link'.  Note that `org-capture' uses
   identifier of the file, even if this user option is set to a
   non-nil value.  ]"
   :group 'denote
-  :package-version '(denote . "2.3.0")
   :type 'boolean)
 
 (defcustom denote-templates nil
@@ -449,7 +439,6 @@ The user can choose a template either by invoking the command
 to always prompt for a template when calling the `denote'
 command."
   :type '(alist :key-type symbol :value-type string)
-  :package-version '(denote . "0.5.0")
   :link '(info-link "(denote) The denote-templates option")
   :group 'denote)
 
@@ -463,7 +452,6 @@ are present.
 When nil, only show a simple list of file names that link to the
 current note."
   :group 'denote
-  :package-version '(denote . "1.2.0")
   :type 'boolean)
 
 (make-obsolete 'denote-rename-no-confirm 'denote-rename-confirmations "3.0.0")
@@ -516,7 +504,6 @@ and `denote-directory-subdirectories'.
 
 The match is performed with `string-match-p'."
   :group 'denote
-  :package-version '(denote . "1.2.0")
   :type 'string)
 
 (defcustom denote-excluded-keywords-regexp nil
@@ -527,7 +514,6 @@ prompts as completion candidates when the user option
 
 The match is performed with `string-match-p'."
   :group 'denote
-  :package-version '(denote . "1.2.0")
   :type 'string)
 
 (defcustom denote-after-new-note-hook nil
@@ -536,7 +522,6 @@ This also covers all convenience functions that call `denote'
 internally, such as `denote-signature' and `denote-type' (check
 the default value of the user option `denote-commands-for-new-notes')."
   :group 'denote
-  :package-version '(denote . "2.1.0")
   :link '(info-link "(denote) Standard note creation")
   :type 'hook)
 
@@ -549,7 +534,6 @@ This affects the behaviour of the commands `denote-rename-file',
 `denote-keywords-add', `denote-keywords-remove', and any other
 command that builds on top of them."
   :group 'denote
-  :package-version '(denote . "2.3.0")
   :link '(info-link "(denote) Renaming files")
   :type 'hook)
 
@@ -575,7 +559,6 @@ structure template as soon as `denote-region' is done:
     (add-hook \\='denote-region-after-new-note-functions
               #\\='my-denote-region-org-structure-template)"
   :group 'denote
-  :package-version '(denote . "2.1.0")
   :link '(info-link "(denote) Create a note with the region's contents")
   :type 'hook)
 
@@ -620,7 +603,6 @@ minibuffer completion, due to the specifics of their data.
 
 Also see `denote-prompts'."
   :type 'boolean
-  :package-version '(denote . "2.3.0")
   :group 'denote)
 
 (defcustom denote-commands-for-new-notes
@@ -634,7 +616,6 @@ Also see `denote-prompts'."
 These are used by commands such as `denote-open-or-create-with-command'
 and `denote-link-after-creating-with-command'."
   :group 'denote
-  :package-version '(denote . "2.1.0")
   :link '(info-link "(denote) Choose which commands to prompt for")
   :type '(repeat symbol))
 
@@ -674,7 +655,6 @@ reason: they are the distillation of years of experience.  Here we give
 you what you wish, but bear in mind it may not be what you need.  You
 have been warned."
   :group 'denote
-  :package-version '(denote . "2.3.0")
   :link '(info-link "(denote) User-defined sluggification of file name components")
   :type '(alist :key (choice (const title)
                              (const signature)
@@ -697,8 +677,7 @@ the file has a signature, it is prepended to the title."
   :group 'denote
   :type '(choice
           (function :tag "Link to title and include signature, if present" denote-link-description-with-signature-and-title)
-          (function :tag "Custom function like `denote-link-description-with-signature-and-title'"))
-  :package-version '(denote . "2.3.0"))
+          (function :tag "Custom function like `denote-link-description-with-signature-and-title'")))
 
 ;;;; Main variables
 
@@ -3225,88 +3204,74 @@ of the file.  This needs to be done manually."
 
 (defface denote-faces-link '((t :inherit link))
   "Face used to style Denote links in the buffer."
-  :group 'denote-faces
-  :package-version '(denote . "0.5.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-subdirectory '((t :inherit bold))
   "Face for subdirectory of file name.
 This should only ever needed in the backlinks' buffer (or
 equivalent), not in Dired."
-  :group 'denote-faces
-  :package-version '(denote . "0.2.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-date '((t :inherit font-lock-variable-name-face))
   "Face for file name date in Dired buffers.
 This is the part of the identifier that covers the year, month,
 and day."
-  :group 'denote-faces
-  :package-version '(denote . "0.1.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-time '((t :inherit denote-faces-date))
   "Face for file name time in Dired buffers.
 This is the part of the identifier that covers the hours, minutes,
 and seconds."
-  :group 'denote-faces
-  :package-version '(denote . "0.1.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-title nil
   "Face for file name title in Dired buffers."
-  :group 'denote-faces
-  :package-version '(denote . "0.1.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-year '((t :inherit denote-faces-date))
   "Face for file name year in Dired buffers.
 This is the part of the identifier that covers the year, month, and day."
-  :group 'denote-faces
-  :package-version '(denote . "2.3.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-month '((t :inherit denote-faces-date))
   "Face for file name month in Dired buffers.
 This is the part of the identifier that covers the year, month, and day."
-  :group 'denote-faces
-  :package-version '(denote . "2.3.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-day '((t :inherit denote-faces-date))
   "Face for file name day in Dired buffers.
 This is the part of the identifier that covers the year, month, and day."
-  :group 'denote-faces
-  :package-version '(denote . "2.3.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-hour '((t :inherit denote-faces-date))
   "Face for file name hours in Dired buffers.
 This is the part of the identifier that covers the hours, minutes,
 and seconds."
-  :group 'denote-faces
-  :package-version '(denote . "2.3.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-minute '((t :inherit denote-faces-date))
   "Face for file name minutes in Dired buffers.
 This is the part of the identifier that covers the hours, minutes,
 and seconds."
-  :group 'denote-faces
-  :package-version '(denote . "2.3.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-second '((t :inherit denote-faces-date))
   "Face for file name seconds in Dired buffers.
 This is the part of the identifier that covers the hours, minutes,
 and seconds."
-  :group 'denote-faces
-  :package-version '(denote . "2.3.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-extension '((t :inherit shadow))
   "Face for file extension type in Dired buffers."
-  :group 'denote-faces
-  :package-version '(denote . "0.1.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-keywords '((t :inherit font-lock-builtin-face))
   "Face for file name keywords in Dired buffers."
-  :group 'denote-faces
-  :package-version '(denote . "0.1.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-signature '((t :inherit font-lock-warning-face))
   "Face for file name signature in Dired buffers."
-  :group 'denote-faces
-  :package-version '(denote . "2.0.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-delimiter
   '((((class color) (min-colors 88) (background light))
@@ -3315,13 +3280,11 @@ and seconds."
      :foreground "gray30")
     (t :inherit shadow))
   "Face for file name delimiters in Dired buffers."
-  :group 'denote-faces
-  :package-version '(denote . "0.1.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-time-delimiter '((t :inherit shadow))
   "Face for the delimiter between date and time in Dired buffers."
-  :group 'denote-faces
-  :package-version '(denote . "2.1.0"))
+  :group 'denote-faces)
 
 (defvar denote-faces--file-name-regexp
   (concat "\\(?11:[\t\s]+\\|.*/\\)?"
@@ -3357,18 +3320,15 @@ and seconds."
 
 (defface denote-faces-prompt-old-name '((t :inherit error))
   "Face for the old name shown in the prompt of `denote-rename-file' etc."
-  :group 'denote-faces
-  :package-version '(denote . "2.2.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-prompt-new-name '((t :inherit success))
   "Face for the new name shown in the prompt of `denote-rename-file' etc."
-  :group 'denote-faces
-  :package-version '(denote . "2.2.0"))
+  :group 'denote-faces)
 
 (defface denote-faces-prompt-current-name '((t :inherit denote-faces-prompt-old-name))
   "Face for the current file shown in the prompt of `denote-rename-file' etc."
-  :group 'denote-faces
-  :package-version '(denote . "2.2.0"))
+  :group 'denote-faces)
 
 ;;;; Fontification in Dired
 
@@ -3385,14 +3345,12 @@ If `denote-dired-directories-include-subdirectories' is non-nil,
 also apply the effect to all subdirectories of those specified in
 the list."
   :type '(repeat directory)
-  :package-version '(denote . "0.1.0")
   :link '(info-link "(denote) Fontification in Dired")
   :group 'denote-dired)
 
 (defcustom denote-dired-directories-include-subdirectories nil
   "If non-nil `denote-dired-directories' also affects all subdirectories.
 Otherwise `denote-dired-directories' works only with exact matches."
-  :package-version '(denote . "2.2.0")
   :link '(info-link "(denote) Fontification in Dired")
   :type 'boolean
   :group 'denote-dired)
@@ -3498,7 +3456,6 @@ and/or the documentation string of `display-buffer'."
   :type '(cons (choice (function :tag "Display Function")
                        (repeat :tag "Display Functions" function))
                alist)
-  :package-version '(denote . "3.0.0")
   :group 'denote-link)
 
 ;;;;; Link to note
@@ -4493,7 +4450,6 @@ The string can include arbitrary text.  It is appended to new
 notes via the `denote-org-capture' function.  Every new note has
 the standard front matter we define."
   :type 'string
-  :package-version '(denote . "0.1.0")
   :group 'denote-org-capture)
 
 (defvar denote-last-path nil "Store last path.")
